@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const uploadFile = require('./services/storage.services.js');
+const postModel = require('./models/post.model.js');
 
 const app = express();
 
@@ -16,14 +17,17 @@ app.get('/', (req, res) => {
 })
 
 app.post('/create-post', upload.single('image'), async (req, res) => {
-    console.log(req.file)
-    console.log(req.body.caption)
     
     const result = await uploadFile(req.file.buffer);
 
-    console.log(result)
+    const post = await postModel.create({
+    image: result.url,
+    caption: req.body.caption
+    })
+    
     return res.status(200).json({
-        message: "something",
+        message: "post created!",
+        post: post
     })
 })
 
